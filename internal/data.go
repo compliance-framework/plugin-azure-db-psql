@@ -239,13 +239,7 @@ func (dp *AzureDataProcessor) ProcessInstanceAndPolicy(policyPath string, instan
 		},
 	}
 
-	instanceAndPolicyEvalSteps := make([]*proto.Step, 0)
-	instanceAndPolicyEvalSteps = append(instanceAndPolicyEvalSteps, &proto.Step{
-		Title:       "Compile Policy Bundle policy",
-		Description: "",
-	})
 	dp.logger.Debug("evaluating instance with policy", "instanceID", instance["InstanceID"], "policyPath", policyPath)
-
 	results, err := policyManager.New(dp.ctx, dp.logger, policyPath).Execute(dp.ctx, "compliance_plugin", instance)
 	if err != nil {
 		dp.logger.Error("policy evaluation failed", "error", err)
