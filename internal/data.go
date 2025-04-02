@@ -313,7 +313,8 @@ func (dp *AzureDataProcessor) ProcessInstanceAndPolicy(policyPath string, instan
 				UUID:      findingUUID.String(),
 				Collected: timestamppb.New(time.Now()),
 				Labels: map[string]string{
-					"type":         "az-postgres-database",
+					"type":         "azure",
+					"service":      "postgres-database",
 					"instanceID":   fmt.Sprintf("%s", instance["InstanceID"]),
 					"_policy":      result.Policy.Package.PurePackage(),
 					"_policy_path": result.Policy.File,
