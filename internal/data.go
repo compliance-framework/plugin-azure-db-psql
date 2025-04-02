@@ -316,7 +316,7 @@ func (dp *AzureDataProcessor) ProcessInstanceAndPolicy(policyPath string, instan
 					"type":          "azure",
 					"service":       "postgres-database",
 					"instance-id":   instance["InstanceID"].(string),
-					"instance-name": instance["InstanceName"].(string),
+					"instance-name": instance["Name"].(string),
 					"_policy":       result.Policy.Package.PurePackage(),
 					"_policy_path":  result.Policy.File,
 				},
