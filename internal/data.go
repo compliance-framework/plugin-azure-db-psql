@@ -125,7 +125,7 @@ func (dp *AzureDataProcessor) ProcessPaginator(pager *DBPager, policyPaths []str
 			break
 		}
 
-		dp.logger.Debug("Instances", page.Value)
+		dp.logger.Debug("Log Instances", "Instances", page.Value)
 
 		for _, instance := range page.Value {
 			collectSteps := make([]*proto.Step, len(dp.collectSteps))
@@ -268,7 +268,7 @@ func (dp *AzureDataProcessor) ProcessInstanceAndPolicy(policyPath string, instan
 			"policy_file": result.Policy.File,
 			"policy_path": policyPath,
 		}
-		maps.Copy(subjectAttributeMap, observationUUIDMap)
+		maps.Copy(observationUUIDMap, subjectAttributeMap)
 		observationUUID, err := sdk.SeededUUID(observationUUIDMap)
 		if err != nil {
 			accumulatedErrors = errors.Join(accumulatedErrors, err)
@@ -283,7 +283,8 @@ func (dp *AzureDataProcessor) ProcessInstanceAndPolicy(policyPath string, instan
 			"policy_file": result.Policy.File,
 			"policy_path": policyPath,
 		}
-		maps.Copy(subjectAttributeMap, findingUUIDMap)
+		maps.Copy(findingUUIDMap, subjectAttributeMap)
+
 		findingUUID, err := sdk.SeededUUID(findingUUIDMap)
 		if err != nil {
 			accumulatedErrors = errors.Join(accumulatedErrors, err)
