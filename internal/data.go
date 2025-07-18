@@ -32,7 +32,6 @@ func NewAzureDataProcessor(ctx context.Context, logger hclog.Logger, config map[
 
 // Get the data from Azure, evaluate that data against policies and send to the API
 func (dp *AzureDataProcessor) Process(policyPaths []string) (proto.ExecutionStatus, error) {
-	ctx := context.TODO()
 	evalStatus := proto.ExecutionStatus_SUCCESS
 	var accumulatedErrors error
 
@@ -52,7 +51,7 @@ func (dp *AzureDataProcessor) Process(policyPaths []string) (proto.ExecutionStat
 		},
 	})
 
-	for server, err := range dp.GetPostgresFlexibleServers(ctx) {
+	for server, err := range dp.GetPostgresFlexibleServers() {
 		if err != nil {
 			dp.logger.Error("Error retrieving Azure PostgreSQL servers", "error", err)
 			evalStatus = proto.ExecutionStatus_FAILURE
@@ -152,7 +151,7 @@ func (dp *AzureDataProcessor) Process(policyPaths []string) (proto.ExecutionStat
 				activities,
 			)
 
-			evidence, err := processor.GenerateResults(ctx, policyPath, server)
+			evidence, err := processor.GenerateResults(dp.ctx, policyPath, server)
 			evidences = append(evidences, evidence...)
 
 			if err != nil {
@@ -161,7 +160,7 @@ func (dp *AzureDataProcessor) Process(policyPaths []string) (proto.ExecutionStat
 			}
 		}
 
-		if err := dp.apiHelper.CreateEvidence(ctx, evidences); err != nil {
+		if err := dp.apiHelper.CreateEvidence(dp.ctx, evidences); err != nil {
 			dp.logger.Error("Error creating evidence", "error", err)
 			accumulatedErrors = errors.Join(accumulatedErrors, err)
 			evalStatus = proto.ExecutionStatus_FAILURE
@@ -172,7 +171,7 @@ func (dp *AzureDataProcessor) Process(policyPaths []string) (proto.ExecutionStat
 	return evalStatus, accumulatedErrors
 }
 
-func (dp *AzureDataProcessor) GetPostgresFlexibleServers(ctx context.Context) iter.Seq2[*armpostgresqlflexibleservers.Server, error] {
+func (dp *AzureDataProcessor) GetPostgresFlexibleServers() iter.Seq2[*armpostgresqlflexibleservers.Server, error] {
 	return func(yield func(*armpostgresqlflexibleservers.Server, error) bool) {
 		cred, err := azidentity.NewDefaultAzureCredential(nil)
 		if err != nil {
@@ -194,7 +193,7 @@ func (dp *AzureDataProcessor) GetPostgresFlexibleServers(ctx context.Context) it
 		pager := client.NewListPager(nil)
 
 		for pager.More() {
-			page, err := pager.NextPage(ctx)
+			page, err := pager.NextPage(dp.ctx)
 			if err != nil {
 				dp.logger.Error("unable to list Azure PostgreSQL servers", "error", err)
 				yield(nil, err)
