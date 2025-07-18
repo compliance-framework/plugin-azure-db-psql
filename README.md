@@ -29,6 +29,6 @@ For details on available fields, refer to the [Azure SDK documentation](https://
 
 To see the data in action, review the unit tests in the [policies repo](https://github.com/compliance-framework/plugin-azure-db-psql-policies/tree/main/policies).
 
-## Licence
+## License
 
 [AGPL v3](./LICENSE)
